@@ -1,0 +1,102 @@
+.container {
+  min-height: 100vh;
+  background-color: #f7fafc;
+  width: 100vw;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.upload-section {
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.recording-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.start-btn,
+.stop-btn,
+.submit-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.start-btn {
+  background-color: #38a169;
+}
+
+.start-btn:hover {
+  background-color: #2f855a;
+}
+
+.stop-btn {
+  background-color: #e53e3e;
+}
+
+.stop-btn:hover {
+  background-color: #c53030;
+}
+
+.submit-btn {
+  background-color: #3182ce;
+  margin-top: 1rem;
+}
+
+.submit-btn:hover {
+  background-color: #2b6cb0;
+}
+
+.recording-indicator {
+  color: #e53e3e;
+  font-weight: 600;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.audio-player {
+  margin: 1rem 0;
+}
+
+.result-box {
+  margin-top: 2rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+}

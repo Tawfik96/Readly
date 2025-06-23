@@ -1,0 +1,23 @@
+# .gitignore
+
+# Virtual environment
+whisper-env/
+venv/
+.env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE files (VSCode, PyCharm)
+.vscode/
+.idea/
+
+# Logs and databases
+*.log
+*.sqlite
+
+# OS files
+.DS_Store
+Thumbs.db
