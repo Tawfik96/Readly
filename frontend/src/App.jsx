@@ -134,16 +134,15 @@ function App() {
       {result && (
         <div className="result-box">
           <h2>📄 Match Result:</h2>
-          <p>
-            <strong>Matched Sentence:</strong> {result.pdf_text}
+          {/* <p>
+            <strong>Matched Sentence:</strong> {result.text}
           </p>
           <p>
-            <strong>block/sentence</strong>{" "}
-            {result.end_position.page +
-              " " +
-              result.end_position.block +
-              " " +
-              result.end_position.sentence}
+            <strong>page/block</strong>{" "}
+            {result.matched_blocks.page + " " + result.matched_blocks.block}
+          </p>
+          <p>
+            <strong>Block:</strong> {result.pdf_name}
           </p>
           <p>
             <strong>Score:</strong> {result.score}
@@ -151,7 +150,7 @@ function App() {
           <p>
             <strong>Status:</strong>{" "}
             {result.is_match ? "✅ Good match" : "❌ Not confident"}
-          </p>
+          </p> */}
         </div>
       )}
     </div>

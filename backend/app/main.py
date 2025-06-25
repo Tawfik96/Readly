@@ -1,3 +1,4 @@
+import time
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from app.transcriber import transcribe_audio
@@ -24,10 +25,13 @@ async def upload_files(pdf: UploadFile = File(...), audio: UploadFile = File(...
     #     f.write(await audio.read())
 
     pdf_text = extract_text_from_pdf(await pdf.read())
-    # transcript = transcribe_audio(await audio.read())
+    start_time=  time.time()
     transcript = transcribe_audio(audio_path)
-    match_result = match_transcript_to_pdf(pdf_text, transcript)
-    return match_result
+    end_time = time.time()
+    duration = end_time - start_time
+    duration = round(duration, 2)
+    match_result = match_transcript_to_pdf_test(pdf_text, transcript)
+    return match_result, duration
 
 @app.post("/extract-pdf/")
 async def extract_pdf(pdf: UploadFile = File(...)):
@@ -40,7 +44,8 @@ async def extract_pdf(pdf: UploadFile = File(...)):
             "length3": len(structure[2]),
             "page1":structure[0],
             "page2": structure[1],
-            "page3": structure[2]}
+            "page3": structure[2],
+            "page4": structure[3],}
             
 
 #     API to test matching logic

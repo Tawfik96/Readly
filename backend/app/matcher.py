@@ -173,7 +173,8 @@ def match_transcript_to_pdf(pdf_text_nested, user_text, threshold=70):
 
     return {
         "is_match": len(matches) > 0,
-        "matched_blocks": result_text,
+        # "matched_blocks": matches,
+        "text": result_text,
         "score": min([match["score"] for match in matches]) if matches else 0
     }
 
@@ -200,7 +201,7 @@ def match_transcript_to_pdf_test(pdf_text_nested, user_text, threshold=70):
                     })
 
     return {
-        "is_match": len(matches) > 0,
+
         "matched_blocks": matches
     }
 
