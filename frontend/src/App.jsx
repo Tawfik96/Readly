@@ -9,6 +9,7 @@ function App() {
   const [audioBlob, setAudioBlob] = useState(null);
   const [result, setResult] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [isLoading, setIsLoading] = useState(false); // New loading state
   const timerRef = useRef(null);
   const audioRef = useRef(null);
 
@@ -53,12 +54,22 @@ function App() {
     if (!pdfFile || !audioBlob)
       return alert("Please upload a PDF and record audio.");
 
-    const formData = new FormData();
-    formData.append("pdf", pdfFile);
-    formData.append("audio", audioBlob, "recording.wav");
+    setIsLoading(true); // Start loading
+    // setResult(null);
 
-    const res = await axios.post("http://localhost:8000/upload/", formData);
-    setResult(res.data);
+    try {
+      const formData = new FormData();
+      formData.append("pdf", pdfFile);
+      formData.append("audio", audioBlob, "recording.wav");
+
+      const res = await axios.post("http://localhost:8000/upload/", formData);
+      setResult(res.data);
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("An error occurred during submission");
+    } finally {
+      setIsLoading(false); // Stop loading regardless of success/failure
+    }
   };
 
   return (
@@ -105,15 +116,34 @@ function App() {
         </audio>
       )}
 
-      <button onClick={handleSubmit} className="submit-btn">
-        🔍 Submit & Match
+      <button
+        onClick={handleSubmit}
+        className="submit-btn"
+        disabled={isLoading} // Disable button during loading
+      >
+        {isLoading ? "⏳ Processing..." : "🔍 Submit & Match"}
       </button>
+
+      {isLoading && (
+        <div className="loading-indicator">
+          <div className="spinner"></div>
+          <p>Analyzing your content...</p>
+        </div>
+      )}
 
       {result && (
         <div className="result-box">
           <h2>📄 Match Result:</h2>
           <p>
-            <strong>Matched Sentence:</strong> {result.matched_sentence}
+            <strong>Matched Sentence:</strong> {result.pdf_text}
+          </p>
+          <p>
+            <strong>block/sentence</strong>{" "}
+            {result.end_position.page +
+              " " +
+              result.end_position.block +
+              " " +
+              result.end_position.sentence}
           </p>
           <p>
             <strong>Score:</strong> {result.score}
