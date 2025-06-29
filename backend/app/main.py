@@ -4,9 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.transcriber import transcribe_audio
 from app.matcher import match_transcript_to_pdf, match_transcript_to_pdf_test
 from app.pdf_parser import extract_text_from_pdf
-
+from app.reflector import questions_generator
 import os
 from pathlib import Path
+from pydantic import BaseModel
+
+class TextInput(BaseModel):
+    text: str
+    
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -30,8 +35,8 @@ async def upload_files(pdf: UploadFile = File(...), audio: UploadFile = File(...
     end_time = time.time()
     duration = end_time - start_time
     duration = round(duration, 2)
-    match_result = match_transcript_to_pdf_test(pdf_text, transcript)
-    return match_result, duration
+    match_result = match_transcript_to_pdf(pdf_text, transcript)
+    return match_result
 
 @app.post("/extract-pdf/")
 async def extract_pdf(pdf: UploadFile = File(...)):
@@ -50,8 +55,22 @@ async def extract_pdf(pdf: UploadFile = File(...)):
 
 #     API to test matching logic
 @app.post("/match/")
-async def match_text(pdf: UploadFile = File(...), user_text: str = ""):
+async def match_text(pdf: UploadFile = File(...), user_text: str = "",audio: UploadFile = File(...)):
+    audio_path = os.path.join(UPLOAD_DIR, audio.filename)
     pdf_bytes = await pdf.read()
     pdf_text = extract_text_from_pdf(pdf_bytes)
+    if not user_text:
+        user_text = transcribe_audio(audio_path)
     match_result = match_transcript_to_pdf_test(pdf_text, user_text)
     return match_result
+
+
+@app.post("/generate-questions/")
+async def generate_questions(data: TextInput):
+    text = data.text
+    questions = questions_generator(text[:2000])
+    return {'questions':questions}
+
+@app.get("/get_location")
+async def get_page_location(s :str=""):
+    return "0"

@@ -132,3 +132,25 @@
   cursor: not-allowed;
 }
 /* End loading style */
+
+/* REFLECTIVE PART STYLE */
+.reflect-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #ffd966;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.reflection-questions {
+  margin-top: 1rem;
+  background-color: #f4f4f4;
+  padding: 1rem;
+  border-radius: 5px;
+}
+.location-label {
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}

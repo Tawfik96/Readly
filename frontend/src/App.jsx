@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
 
@@ -9,9 +9,23 @@ function App() {
   const [audioBlob, setAudioBlob] = useState(null);
   const [result, setResult] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [isLoading, setIsLoading] = useState(false); // New loading state
+  const [isLoading, setIsLoading] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [startPage, setStartPage] = useState(null);
   const timerRef = useRef(null);
   const audioRef = useRef(null);
+
+  useEffect(() => {
+    const fetchStartPage = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/get_location");
+        setStartPage(res.data);
+      } catch (err) {
+        console.error("Failed to get location", err);
+      }
+    };
+    fetchStartPage();
+  }, []);
 
   const handlePdfUpload = (e) => {
     setPdfFile(e.target.files[0]);
@@ -72,10 +86,34 @@ function App() {
     }
   };
 
+  const handleReflect = async () => {
+    if (!result || !result.text) {
+      alert("No result to reflect on yet.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/generate-questions/",
+        { text: result.text }
+      );
+      console.log("Response from question generation:", res.data);
+      console.log("Generated questions:", res.data.questions);
+      setQuestions(res.data.questions);
+    } catch (err) {
+      console.error("Failed to generate questions", err);
+      alert("Error generating reflection questions");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="container">
       <h1 className="title">📖 ReadMe - AI Reading Assistant</h1>
-
+      {startPage !== null && (
+        <p className="location-label">📍 Start Page: {startPage}</p>
+      )}
       <div className="upload-section">
         <label className="label">Upload PDF:</label>
         <input
@@ -84,7 +122,6 @@ function App() {
           onChange={handlePdfUpload}
         />
       </div>
-
       <div className="recording-buttons">
         <button
           onClick={startRecording}
@@ -101,7 +138,6 @@ function App() {
           ⏹ Stop Recording
         </button>
       </div>
-
       {recording && (
           <p className="recording-indicator">Recording in progress...</p>
         ) && (
@@ -109,48 +145,54 @@ function App() {
             ⏱️ {recordingTime}s elapsed
           </p>
         )}
-
       {audioRef.current && (
         <audio controls className="audio-player">
           <source src={audioRef.current} type="audio/wav" />
         </audio>
       )}
-
       <button
         onClick={handleSubmit}
         className="submit-btn"
-        disabled={isLoading} // Disable button during loading
+        disabled={isLoading}
       >
         {isLoading ? "⏳ Processing..." : "🔍 Submit & Match"}
       </button>
-
       {isLoading && (
         <div className="loading-indicator">
           <div className="spinner"></div>
           <p>Analyzing your content...</p>
         </div>
       )}
-
       {result && (
         <div className="result-box">
-          <h2>📄 Match Result:</h2>
-          {/* <p>
-            <strong>Matched Sentence:</strong> {result.text}
-          </p>
           <p>
-            <strong>page/block</strong>{" "}
-            {result.matched_blocks.page + " " + result.matched_blocks.block}
+            <strong>📘 End Page:</strong> {result.end_position}
           </p>
-          <p>
-            <strong>Block:</strong> {result.pdf_name}
-          </p>
-          <p>
-            <strong>Score:</strong> {result.score}
-          </p>
-          <p>
-            <strong>Status:</strong>{" "}
-            {result.is_match ? "✅ Good match" : "❌ Not confident"}
-          </p> */}
+
+          <button
+            onClick={handleReflect}
+            className="reflect-btn"
+            disabled={isLoading}
+          >
+            ✨ Reflect
+          </button>
+          {isLoading && (
+            <div className="loading-indicator">
+              <div className="spinner"></div>
+              <p>Reflecting on the content...</p>
+            </div>
+          )}
+
+          {questions && (
+            <div className="reflection-questions">
+              <h3>🧠 Reflection Questions:</h3>
+              <ul>
+                {questions.map((q, i) => (
+                  <li key={i}>❓ {q}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>
