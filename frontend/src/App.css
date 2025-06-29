@@ -154,3 +154,34 @@
   font-style: italic;
   margin-bottom: 0.5rem;
 }
+
+/* Book Selection Styling*/
+.book-selector {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.book-dropdown {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 400px;
+  background-color: #f9f9f9;
+  appearance: none;
+  cursor: pointer;
+  transition: border 0.2s ease;
+}
+
+.book-dropdown:hover,
+.book-dropdown:focus {
+  border-color: #007bff;
+  outline: none;
+  background-color: #fff;
+}
