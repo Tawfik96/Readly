@@ -2,9 +2,12 @@ import fitz  # PyMuPDF
 import io
 import re
 
-def extract_text_from_pdf(pdf_bytes):
+def extract_text_from_pdf(pdf_path):
     """Extracts PDF text in hierarchical structure: page → blocks → sentences"""
-    doc = fitz.open(stream=io.BytesIO(pdf_bytes), filetype="pdf")
+    # doc = fitz.open(stream=io.BytesIO(pdf_bytes), filetype="pdf")
+    doc = fitz.open(pdf_path)
+    if not doc:
+        raise ValueError("Could not open PDF file.")
     page_structure = []
     
     for page in doc:

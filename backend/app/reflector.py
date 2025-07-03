@@ -1,10 +1,23 @@
+import io
 import re
 import requests
 from collections import Counter
 
 
 def generate_questions(text):
-    OPENROUTER_API_KEY = "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"
+    # get that key from notes.txt or from your environment variables
+
+    notes_file = io.open("../Notes.txt", "r")
+    if notes_file is None:
+        raise FileNotFoundError("Notes.txt file not found")
+    lines = notes_file.readlines()
+    for line in lines:
+        if "Oper Router Readly API Key" in line:
+            OPENROUTER_API_KEY = line.split(":")[1].strip()
+            break
+    else:
+        raise ValueError("API key not found in Notes.txt")
+    # OPENROUTER_API_KEY = 
 
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",

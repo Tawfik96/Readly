@@ -2,6 +2,8 @@ import sqlite3
 import json
 import time
 import datetime
+from typing import Optional
+from fastapi import Query
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from app.transcriber import transcribe_audio
@@ -26,14 +28,21 @@ app.add_middleware(
     allow_methods=["*"], allow_headers=["*"],
 )
 
+
 @app.post("/upload/")
-async def upload_files(pdf: UploadFile = File(...), audio: UploadFile = File(...)):
-    # Save Audio
+async def upload_files(pdf_path:str="uploads/story.pdf",  audio: UploadFile = File(...)):
+    if pdf_path or audio:
+        print("Received files:", pdf_path, audio.filename)
+    else:
+        print("No files received")
+
+
     audio_path = os.path.join(UPLOAD_DIR, audio.filename)
+    # audio_path = audio.filename
     # with open(audio_path, "wb") as f:
     #     f.write(await audio.read())
 
-    pdf_text = extract_text_from_pdf(await pdf.read())
+    pdf_text = extract_text_from_pdf(pdf_path)
     start_time=  time.time()
     transcript = transcribe_audio(audio_path)
     end_time = time.time()
@@ -151,31 +160,54 @@ async def get_books():
 
 
 @app.get("/sessions/")
-async def get_sessions(pdf_path: str):
+async def get_sessions(pdf_path: Optional[str] = Query(None)):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id FROM books WHERE pdf_path = ?", (pdf_path,))
-    book = cursor.fetchone()
-    if not book:
-        return {"message": "Book not found"}
-    book_id = book[0]
-
-    cursor.execute("""
-        SELECT start_page, end_page, user_notes, reflection, date FROM sessions
-        WHERE book_id = ?
-    """, (book_id,))
-    rows = cursor.fetchall()
-
     sessions = []
-    for row in rows:
-        sessions.append({
-            "start_page": row[0],  
-            "end_page": row[1],
-            "user_notes": row[2],
-            "reflection": json.loads(row[3]),
-            "date": row[4]
-        })
+
+    if pdf_path:
+        # Get specific book ID
+        cursor.execute("SELECT id FROM books WHERE pdf_path = ?", (pdf_path,))
+        book = cursor.fetchone()
+        if not book:
+            conn.close()
+            return {"message": "Book not found"}
+        book_id = book[0]
+
+        cursor.execute("""
+            SELECT start_page, end_page, user_notes, reflection, date 
+            FROM sessions WHERE book_id = ?
+        """, (book_id,))
+        rows = cursor.fetchall()
+
+        for row in rows:
+            sessions.append({
+                "start_page": row[0],
+                "end_page": row[1],
+                "user_notes": row[2],
+                "reflection": json.loads(row[3]),
+                "date": row[4],
+                "pdf_path": pdf_path
+            })
+    else:
+        # Fetch all sessions with associated pdf_path
+        cursor.execute("""
+            SELECT s.start_page, s.end_page, s.user_notes, s.reflection, s.date, b.pdf_path
+            FROM sessions s
+            JOIN books b ON s.book_id = b.id
+        """)
+        rows = cursor.fetchall()
+
+        for row in rows:
+            sessions.append({
+                "start_page": row[0],
+                "end_page": row[1],
+                "user_notes": row[2],
+                "reflection": json.loads(row[3]),
+                "date": row[4],
+                "pdf_path": row[5]
+            })
 
     conn.close()
     return sessions
