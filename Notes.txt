@@ -1,2 +1,2 @@
 uvicorn app.main:app --reload  ---> To Run Backend Server
-Oper Router Readly API Key: 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
+Oper Router Readly API Key: 
