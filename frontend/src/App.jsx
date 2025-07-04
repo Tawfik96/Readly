@@ -1,6 +1,7 @@
 // import React, { useState, useRef, useEffect } from "react";
 // import axios from "axios";
-import "./App.css";
+// import "./App.css";
+import "./Style.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import BookManager from "./pages/BookManager";
 import SessionPage from "./pages/SessionPage";
@@ -12,7 +13,6 @@ function App() {
       <Routes>
         <Route path="/" element={<BookManager />} />
         <Route path="/session" element={<SessionPage />} />
-        {/* <Route path="/sessions/:bookPath" element={<BookSessions />} /> */}
         <Route path="/sessions" element={<SessionListPage />} />
       </Routes>
     </Router>

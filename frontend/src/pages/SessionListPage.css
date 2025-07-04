@@ -1,15 +1,202 @@
-.session-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 1rem;
-  width: 100%;
-  max-width: 800px;
+/* SessionListPage.css */
+
+/* Empty State Styling */
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(100, 116, 139, 0.05);
+  border-radius: 16px;
+  border: 2px dashed rgba(100, 116, 139, 0.2);
+  transition: all 0.3s ease;
 }
 
-.session-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+.empty-state:hover {
+  border-color: rgba(100, 116, 139, 0.3);
+  background: rgba(100, 116, 139, 0.08);
+}
+
+.empty-state-title {
+  color: #64748b;
+  font-size: 1.1rem;
   margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.empty-state-subtitle {
+  color: #64748b;
+  margin: 0;
+}
+
+/* Session Card Header */
+.session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.session-info h3 {
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.session-info .pages-info {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.session-date-badge {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.session-date-badge:hover {
+  background: rgba(59, 130, 246, 0.15);
+  transform: scale(1.05);
+}
+
+/* Notes Section */
+.notes-section {
+  margin-bottom: 1.5rem;
+}
+
+.notes-title {
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.notes-content {
+  background: rgba(59, 130, 246, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  border-left: 4px solid #3b82f6;
+  transition: all 0.3s ease;
+}
+
+.notes-content:hover {
+  background: rgba(59, 130, 246, 0.08);
+  transform: translateX(2px);
+}
+
+.notes-text {
+  color: #374151;
+  margin: 0;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* Reflection Section */
+.reflection-section {
+  margin-bottom: 0;
+}
+
+.reflection-title {
+  color: #1e293b;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.reflection-list {
+  background: rgba(16, 185, 129, 0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0;
+  border-left: 4px solid #10b981;
+  transition: all 0.3s ease;
+}
+
+.reflection-list:hover {
+  background: rgba(16, 185, 129, 0.08);
+  transform: translateX(2px);
+}
+
+.reflection-item {
+  color: #374151;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.reflection-item:last-child {
+  border-bottom: none;
+}
+
+.reflection-item:hover {
+  color: #1e293b;
+  padding-left: 0.25rem;
+}
+
+.reflection-icon {
+  color: #10b981;
+  font-weight: 600;
+  margin-top: 0.1rem;
+  min-width: 1rem;
+}
+
+.reflection-text {
+  flex: 1;
+  line-height: 1.5;
+}
+
+/* Page Description */
+.page-description {
+  color: #64748b;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .session-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .session-date-badge {
+    align-self: flex-start;
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+
+  .notes-content,
+  .reflection-list {
+    padding: 0.75rem;
+  }
+
+  .reflection-item {
+    padding: 0.4rem 0;
+  }
+}
+
+/* Additional hover effects for better interactivity */
+.session-card:hover .notes-content {
+  border-left-color: #2563eb;
+}
+
+.session-card:hover .reflection-list {
+  border-left-color: #059669;
+}
+
+.session-card:hover .session-date-badge {
+  background: rgba(59, 130, 246, 0.2);
 }

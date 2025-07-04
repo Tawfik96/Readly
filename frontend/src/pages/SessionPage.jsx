@@ -1,7 +1,9 @@
+// pages/SessionPage.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import Header from "./Header";
 
 function SessionPage() {
   const location = useLocation();
@@ -25,6 +27,14 @@ function SessionPage() {
       alert("No book selected!");
     }
   }, [selectedBookPath]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
   const startRecording = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -94,6 +104,7 @@ function SessionPage() {
       setIsLoadingReflect(false);
     }
   };
+
   const handleSaveSession = async () => {
     if (!selectedBookPath || !result?.end_position) {
       alert("Missing required session data.");
@@ -122,111 +133,128 @@ function SessionPage() {
 
   return (
     <div className="container">
-      <h1>📖 Reading Session</h1>
-      <p>
-        <strong>Book:</strong> {selectedBookPath}
-      </p>
+      <Header />
 
-      <div className="recording-buttons">
-        <button
-          onClick={startRecording}
-          disabled={recording}
-          //   className="start-btn"
-        >
-          🎙 Start
-        </button>
-        <button
-          onClick={stopRecording}
-          disabled={!recording}
-          //   className="stop-btn"
-        >
-          ⏹ Stop
-        </button>
-      </div>
+      <div className="card">
+        <h1>🎙️ Reading Session</h1>
+        <p style={{ marginBottom: "2rem" }}>
+          <strong>Book:</strong> {selectedBookPath || "No book selected"}
+        </p>
 
-      {recording && (
-          <p className="recording-indicator">Recording in progress...</p>
-        ) && (
-          <p className="text-gray-700 font-semibold">
-            ⏱️ {recordingTime}s elapsed
-          </p>
-        )}
-      {audioRef.current && (
-        <audio controls className="audio-player">
-          <source src={audioRef.current} type="audio/wav" />
-        </audio>
-      )}
-      <button
-        onClick={handleSubmit}
-        className="submit-btn"
-        disabled={isLoading || !audioBlob || !selectedBookPath || result?.text}
-      >
-        {isLoading ? "⏳ Processing..." : "🔍 Analyze"}
-      </button>
-      {isLoading && (
-        <div className="loading-indicator">
-          <div className="spinner"></div>
-          <p>Analyzing your content...</p>
+        <div className="recording-section">
+          <h3>Audio Recording</h3>
+          <p>Record yourself reading aloud for AI analysis</p>
+
+          <div className="recording-buttons">
+            <button
+              onClick={startRecording}
+              disabled={recording}
+              className="btn"
+            >
+              🎙️ Start Recording
+            </button>
+            <button
+              onClick={stopRecording}
+              disabled={!recording}
+              className="btn btn-secondary"
+            >
+              ⏹️ Stop Recording
+            </button>
+          </div>
+
+          {recording && (
+            <div className="recording-indicator">
+              🔴 Recording in progress...
+            </div>
+          )}
+
+          <div className="timer">⏱️ {formatTime(recordingTime)}</div>
+
+          {audioRef.current && (
+            <audio controls className="audio-player">
+              <source src={audioRef.current} type="audio/wav" />
+            </audio>
+          )}
         </div>
-      )}
 
-      {result && (
-        <div className="result">
-          <h2>📄 Analysis Result</h2>
+        <div className="text-center">
+          <button
+            onClick={handleSubmit}
+            className="submit-btn"
+            disabled={
+              isLoading || !audioBlob || !selectedBookPath || result?.text
+            }
+          >
+            {isLoading ? "⏳ Processing..." : "🔍 Analyze Recording"}
+          </button>
+        </div>
 
-          <div>
-            <p>You stopped at page: {result.end_position}</p>
+        {isLoading && (
+          <div className="loading-indicator">
+            <div className="spinner"></div>
+            <p>Analyzing your content...</p>
+          </div>
+        )}
+
+        {result && (
+          <div className="result">
+            <h2>📄 Analysis Results</h2>
+            <p>
+              You stopped at page: <strong>{result.end_position}</strong>
+            </p>
+
             <button
               onClick={handleReflect}
               className="submit-btn"
               disabled={isLoading_reflect || questions.length > 0}
             >
-              {isLoading_reflect ? "⏳ Processing..." : "✨ Reflect"}
+              {isLoading_reflect
+                ? "⏳ Processing..."
+                : "✨ Generate Reflection Questions"}
             </button>
+
             {isLoading_reflect && (
               <div className="loading-indicator">
                 <div className="spinner"></div>
                 <p>Generating questions...</p>
               </div>
             )}
+
+            {questions.length > 0 && (
+              <div>
+                <h3>🧠 Reflection Questions</h3>
+                <ul>
+                  {questions.map((q, i) => (
+                    <li key={i}>❓ {q}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="session-notes">
+              <label htmlFor="notes">📝 Session Notes</label>
+              <textarea
+                id="notes"
+                placeholder="Write your thoughts, insights, and notes from this reading session..."
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+              />
+            </div>
+
+            <button
+              className="submit-btn"
+              style={{
+                marginTop: "1rem",
+                backgroundColor: "#10b981",
+              }}
+              onClick={handleSaveSession}
+              disabled={isSavingSession || !note.trim()}
+            >
+              {isSavingSession ? "💾 Saving..." : "💾 Save Session"}
+            </button>
           </div>
-
-          {questions.length > 0 && (
-            <ul>
-              {questions.map((q, i) => (
-                <li key={i}>❓ {q}</li>
-              ))}
-            </ul>
-          )}
-
-          <div className="session-notes">
-            <label htmlFor="notes">
-              <strong>📝 Notes:</strong>
-            </label>
-            <textarea
-              id="notes"
-              rows="4"
-              style={{ width: "100%", maxWidth: "500px", marginTop: "8px" }}
-              placeholder="Write your notes here..."
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            ></textarea>
-          </div>
-
-          <button
-            className="submit-btn"
-            style={{
-              marginTop: "1rem",
-              color: "white",
-              backgroundColor: "red",
-            }}
-            onClick={handleSaveSession}
-            disabled={isSavingSession || !note.trim()}
-          >
-            {isSavingSession ? "Saving..." : "💾 Save Session"}
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

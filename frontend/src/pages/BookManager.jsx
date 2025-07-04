@@ -1,11 +1,14 @@
+// pages/BookManager.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Header from "./Header";
 
 function BookManager() {
   const [books, setBooks] = useState([]);
   const [bookFile, setBookFile] = useState(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -36,6 +39,9 @@ function BookManager() {
       console.error("Upload failed:", err);
     }
   };
+  const goToHistorySession = (bookPath) => {
+    navigate("/sessions", { state: { bookPath } });
+  };
 
   const goToSession = (bookPath) => {
     navigate("/session", { state: { bookPath } });
@@ -43,30 +49,56 @@ function BookManager() {
 
   return (
     <div className="container">
-      <h1>📚 Your Library</h1>
-      <div className="upload-section">
-        <label>📤 Upload New Book:</label>
-        <input type="file" accept="application/pdf" onChange={handleUpload} />
-      </div>
+      <Header />
 
-      <button onClick={() => navigate("/sessions", { state: {} })}>
-        📜 View Sessions
-      </button>
-      <h2>📂 Available Books</h2>
-      {books.length === 0 ? (
-        <p>No books uploaded yet.</p>
-      ) : (
-        <ul>
-          {books.map((book, idx) => (
-            <li key={idx}>
-              {book.pdf_name}{" "}
-              <button onClick={() => goToSession(book.pdf_path)}>
-                📖 Start Session
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="card">
+        <h1>📚 Your Library</h1>
+
+        <div className="upload-section">
+          <label>📤 Upload New Book</label>
+          <p style={{ marginBottom: "1rem", color: "#64748b" }}>
+            Add a PDF book to your library to start reading sessions
+          </p>
+          <input type="file" accept="application/pdf" onChange={handleUpload} />
+        </div>
+
+        <h2>📂 Available Books</h2>
+        {books.length === 0 ? (
+          <p
+            style={{ textAlign: "center", color: "#64748b", margin: "2rem 0" }}
+          >
+            No books uploaded yet. Upload your first book to get started!
+          </p>
+        ) : (
+          <div className="books-grid">
+            {books.map((book, idx) => (
+              <div key={idx} className="book-card">
+                <div
+                  style={{
+                    fontWeight: "600",
+                    color: "#1e293b",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  📖 {book.pdf_name}
+                </div>
+                <button
+                  className="btn"
+                  onClick={() => goToSession(book.pdf_path)}
+                >
+                  🎙️ Start Session
+                </button>
+                <button
+                  className="btn"
+                  onClick={() => goToHistorySession(book.pdf_path)}
+                >
+                  View Sessions
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
